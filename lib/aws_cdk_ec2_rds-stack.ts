@@ -14,29 +14,35 @@ export class AwsCdkEc2RdsStack extends cdk.Stack {
     super(scope, id, props)
 
     //Start stack
+
+    //create vpc
     const vpc = new ec2.Vpc(this, "VPC")
 
+    //create load balancer
     const lb = new elbv2.ApplicationLoadBalancer(this, "LB", {
       vpc,
       internetFacing: true,
     })
 
+    //add load balancer listener
     const listener = lb.addListener("Listener", {
       port: 80,
     })
 
+    //auto scaling group config
     const asg = new AutoScalingGroup(this, "ASG", {
       vpc,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
       machineImage: new ec2.AmazonLinuxImage(), // get the latest Amazon Linux image
     })
 
+    //create asg target group
     const targets = listener.addTargets("ApplicationFleet", {
       port: 8080,
       targets: [asg],
     })
 
-    // Source Stage
+    // Source Stage with github
     const sourceOutput = new codepipeline.Artifact()
     const sourceAction = new codepipeline_actions.GitHubSourceAction({
       actionName: "GitHub_Source",
@@ -46,7 +52,7 @@ export class AwsCdkEc2RdsStack extends cdk.Stack {
       output: sourceOutput,
     })
 
-    //Build Stage
+    //Build Stage with nodejs app
     const project = new codebuild.PipelineProject(this, "MyProject", {
       buildSpec: codebuild.BuildSpec.fromObject({
         version: "0.2",
@@ -73,7 +79,7 @@ export class AwsCdkEc2RdsStack extends cdk.Stack {
       outputs: [buildOutput],
     })
 
-    //Deploy Stage
+    //Deploy Stage to loadbalancer
     const deploymentGroup = new codedeploy.ServerDeploymentGroup(this, "DeploymentGroup", {
       loadBalancer: codedeploy.LoadBalancer.application(targets),
     })
