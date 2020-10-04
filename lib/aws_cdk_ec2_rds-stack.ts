@@ -6,6 +6,7 @@ import * as codepipeline from "@aws-cdk/aws-codepipeline"
 import * as codepipeline_actions from "@aws-cdk/aws-codepipeline-actions"
 import * as codebuild from "@aws-cdk/aws-codebuild"
 import * as codedeploy from "@aws-cdk/aws-codedeploy"
+import {Bucket} from "@aws-cdk/aws-s3"
 
 require("dotenv").config()
 
@@ -24,6 +25,10 @@ export class AwsCdkEc2RdsStack extends cdk.Stack {
       internetFacing: true,
     })
 
+    //Create server access logs for bucket
+    const serverAccessLogsBucket = new Bucket(this, "MyFirstBucket")
+    lb.logAccessLogs(serverAccessLogsBucket)
+
     //add load balancer listener
     const listener = lb.addListener("Listener", {
       port: 80,
@@ -33,7 +38,7 @@ export class AwsCdkEc2RdsStack extends cdk.Stack {
     const asg = new AutoScalingGroup(this, "ASG", {
       vpc,
       instanceType: ec2.InstanceType.of(ec2.InstanceClass.BURSTABLE2, ec2.InstanceSize.MICRO),
-      machineImage: new ec2.AmazonLinuxImage(), // get the latest Amazon Linux image
+      machineImage: new ec2.AmazonLinuxImage(),
     })
 
     //create asg target group

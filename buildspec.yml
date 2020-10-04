@@ -1,5 +1,6 @@
 version: 0.2
 
+# Optional alternate build setup
 phases:
   install:
     runtime-versions:

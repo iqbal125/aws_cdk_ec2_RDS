@@ -3,12 +3,9 @@
 *.d.ts
 node_modules
 
+.env
+
 # CDK asset staging directory
 .cdk.staging
 cdk.out
 
-# Parcel default cache directory
-.parcel-cache
-
-
-.env
