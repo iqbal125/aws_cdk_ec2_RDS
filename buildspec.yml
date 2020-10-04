@@ -1,0 +1,15 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 10
+  build:
+    commands:
+      - echo Installing source NPM dependencies...
+      - npm install
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Starting Server...
+      - npm start
