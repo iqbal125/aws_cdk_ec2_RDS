@@ -51,8 +51,8 @@ export class AwsCdkEc2RdsStack extends cdk.Stack {
     const sourceOutput = new codepipeline.Artifact()
     const sourceAction = new codepipeline_actions.GitHubSourceAction({
       actionName: "GitHub_Source",
-      owner: "iqbal125",
-      repo: "react-express-sample",
+      owner: process.env.GITHUB_OWNER,
+      repo: process.env.GITHUB_REPO,
       oauthToken: process.env.GITHUB_ACCESS_TOKEN,
       output: sourceOutput,
     })
