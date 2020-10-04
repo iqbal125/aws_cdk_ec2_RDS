@@ -51,12 +51,15 @@ export class AwsCdkEc2RdsStack extends cdk.Stack {
       buildSpec: codebuild.BuildSpec.fromObject({
         version: "0.2",
         phases: {
+          install: {
+            runtime_versions: "nodejs: 10",
+            commands: [],
+          },
           build: {
-            commands: [
-              // By default, you're in a directory with the contents of the repository from sourceAction1.
-              // Use the CODEBUILD_SRC_DIR_source2 environment variable
-              // to get a path to the directory with the contents of the second input repository.
-            ],
+            commands: ["npm install"],
+          },
+          post_build: {
+            commands: ["npm start"],
           },
         },
       }),
