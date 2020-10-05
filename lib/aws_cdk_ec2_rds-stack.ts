@@ -17,7 +17,9 @@ export class AwsCdkEc2RdsStack extends cdk.Stack {
     //Start stack
 
     //create vpc
-    const vpc = new ec2.Vpc(this, "VPC")
+    const vpc = new ec2.Vpc(this, "VPC", {
+      natGateways: 1,
+    })
 
     //create load balancer
     const lb = new elbv2.ApplicationLoadBalancer(this, "LB", {
@@ -59,17 +61,7 @@ export class AwsCdkEc2RdsStack extends cdk.Stack {
 
     //Build Stage with nodejs app
     const project = new codebuild.PipelineProject(this, "MyProject", {
-      buildSpec: codebuild.BuildSpec.fromObject({
-        version: "0.2",
-        phases: {
-          build: {
-            commands: ["npm install"],
-          },
-          post_build: {
-            commands: ["npm start"],
-          },
-        },
-      }),
+      buildSpec: codebuild.BuildSpec.fromObject({filename: "../buildspec.yml"}),
     })
 
     const buildOutput = new codepipeline.Artifact()
